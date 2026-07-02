@@ -1,0 +1,35 @@
+# === 秘密情報（絶対にコミットしない） ===
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# === Python / uv ===
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.uv/
+*.egg-info/
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# === 作業領域・一時ファイル ===
+99_scratch/
+*.tmp
+*.log
+.DS_Store
+
+# === 実験の生成物のうちコミットしないもの ===
+# 生の大容量レスポンスやキャッシュ（必要に応じて調整）
+30_development/**/cache/
+30_development/**/.cache/
+
+# === エディタ ===
+.idea/
+.vscode/
+
+# 注: 撮影した料理写真（90_resources配下）は再現性のため原則コミットする。
+#     ただし容量が大きい場合は別途方針を decisions/ に記録すること。
