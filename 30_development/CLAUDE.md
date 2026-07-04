@@ -47,12 +47,13 @@
 | `trial` | 試行番号（1〜3） |
 | `temperature` | 既定0 |
 | `prompt_version` | プロンプトのバージョン |
-| `image_refs` | 画像のパス/ハッシュ（生base64は記録しない） |
-| `response_raw` | モデルの生応答 |
-| `parsed` | `{dish_name,total_kcal,protein_g,fat_g,carb_g,confidence}` |
-| `usage` | `{input_tokens,output_tokens,total_tokens}` |
-| `latency_ms` | 応答時間 |
-| `cost_jpy` | `usage × config.yamlの単価` で算出 |
+| `image_refs` | 画像の相対パス/ハッシュ（`{path,sha256}`。生base64は記録しない） |
+| `response_raw` | モデルの生応答（最後の試行） |
+| `parsed` | `{dish_name,total_kcal,protein_g,fat_g,carb_g,confidence}`（confidence は null 可） |
+| `usage` | `{input_tokens,output_tokens,total_tokens}`（**全試行の合算**） |
+| `attempts` | 応答を得た API 呼び出し回数（1＋リトライ回数。初回が例外で終わった場合は0） |
+| `latency_ms` | 応答時間（最後の試行） |
+| `cost_jpy` | 合算 `usage × config.yamlの単価` で算出（USD建ては為替でJPY換算） |
 | `price_ref` | 単価の出典・確認日 |
 | `status` | `ok`/`vision_unsupported`/`api_error`/`parse_error` |
 | `error` | エラー内容（なければ null） |

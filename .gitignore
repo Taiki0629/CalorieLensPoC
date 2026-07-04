@@ -21,6 +21,8 @@ venv/
 *.tmp
 *.log
 .DS_Store
+# Windows(WSL) のダウンロード印 (Alternate Data Stream) — 実体ではないので除外
+*:Zone.Identifier
 
 # === 実験の生成物のうちコミットしないもの ===
 # 生の大容量レスポンスやキャッシュ（必要に応じて調整）
