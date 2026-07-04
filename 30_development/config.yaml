@@ -1,0 +1,90 @@
+# 実験設定の集約点（CLAUDE.md §2-3 数値手打ち禁止の起点）。
+# 数値・モデルID・単価・為替・正解kcal はすべてここに置き、コード/記事に直書きしない。
+# 未確定は「要確認」。モデル/単価/為替は CAL-3、正解kcal は CAL-4 で実API・公式情報から確定する。
+
+providers:
+  openai:
+    base_url: null # OpenAI 既定エンドポイント
+    api_key_env: OPENAI_API_KEY
+  aiand:
+    base_url_env: AIAND_BASE_URL # 値は .env（推測禁止・CAL-3で確定）
+    api_key_env: AIAND_API_KEY
+
+pricing:
+  fx:
+    usd_jpy: 要確認 # USD建て単価の JPY 換算レート（CAL-3で確定）
+    ref: 要確認 # 出典URL・確認日
+
+# CAL-3 で確定するまで enabled:false。id/単価/vision を実API(/models)と公式料金で埋める。
+models:
+  - id: 要確認
+    provider: openai
+    label: 要確認 # 例: GPT系
+    vision: 要確認
+    price_input_per_1m: 要確認
+    price_output_per_1m: 要確認
+    price_currency: usd
+    price_ref: 要確認
+    send_seed: true # OpenAI は seed 対応。ai& は要確認（未対応なら false）
+    enabled: false
+  - id: 要確認
+    provider: aiand
+    label: 要確認 # 例: オープンモデル
+    vision: 要確認
+    price_input_per_1m: 要確認
+    price_output_per_1m: 要確認
+    price_currency: jpy
+    price_ref: 要確認
+    send_seed: 要確認 # seed 対応可否を CAL-3 で確認（未確定の間は送らない＝falsy）
+    enabled: false
+
+dishes:
+  - id: conbini_bento
+    label: コンビニ弁当（三色そぼろ系）
+    truth: # CAL-4 で確定（パッケージ栄養成分表示）
+      total_kcal: 要確認
+      protein_g: 要確認
+      fat_g: 要確認
+      carb_g: 要確認
+      product_name: 要確認
+      source: 要確認
+      checked_on: 要確認
+    steps: # アングル積み増し（設計 §3）。derived の JPEG を参照
+      S1: [IMG_0420.jpg]
+      S2: [IMG_0420.jpg, IMG_0423.jpg]
+      S3: [IMG_0420.jpg, IMG_0423.jpg, IMG_0421.jpg]
+      S4: [IMG_0420.jpg, IMG_0423.jpg, IMG_0421.jpg, IMG_0425.jpg]
+  # Phase 2 で sukiya_gyudon を同形式で追加する
+
+experiment:
+  temperature: 0
+  seed: 12345 # 再現性のため対応プロバイダに送る（30_development/CLAUDE.md §5）
+  trials: 3
+  max_json_retries: 2
+  prompt_version: v1
+
+image:
+  max_dim: 1024
+  jpeg_quality: 85
+  # HEIC 原本→JPEG 変換の元ファイル（steps の JPEG に対応する .HEIC）。convert-images が使用
+  originals:
+    IMG_0420.jpg: IMG_0420.HEIC
+    IMG_0421.jpg: IMG_0421.HEIC
+    IMG_0422.jpg: IMG_0422.HEIC
+    IMG_0423.jpg: IMG_0423.HEIC
+    IMG_0424.jpg: IMG_0424.HEIC
+    IMG_0425.jpg: IMG_0425.HEIC
+  # コンタクトシートに並べる順（設計 §8.1）
+  contact_sheet_order:
+    - [S1, IMG_0420.jpg, ほぼ真上]
+    - [S2, IMG_0423.jpg, 斜め上~55]
+    - [S3, IMG_0421.jpg, やや低い~40]
+    - [S4, IMG_0425.jpg, 低い~24]
+    - [予備, IMG_0422.jpg, ~50]
+    - [予備, IMG_0424.jpg, ~30]
+
+paths:
+  resources_dir: ../90_resources # HEIC 原本（30_development から見た相対）
+  derived_dir: data/derived # 変換済み JPEG（image_refs のパス基準）
+  logs_dir: data/logs
+  results_dir: data/results
