@@ -33,6 +33,28 @@ uv run calorielens dry-run --dish conbini_bento --step S1
 uv run calorielens run --run-id <id> --allow-paid    # ← 承認前は実行しない
 ```
 
+> 注: `--config` は**サブコマンドより前**に置く（例 `calorielens --config config.demo.yaml score`）。
+
+## 分析パイプライン（採点 CAL-9 → 可視化 CAL-10）
+
+`data/logs/*.jsonl` → 採点CSV（`data/results/`）→ 図表（`50_output/figures/`）の一方向。数値は
+すべてログ/CSV/config 由来（手打ち禁止）。正解kcal（CAL-4）・単価（CAL-3）が `要確認` の間は該当指標は空。
+
+```bash
+# 実データ（S2 実行後）: 実 config で採点→可視化
+uv run calorielens score                 # data/logs → data/results/scores.csv 等
+uv run calorielens visualize             # 50_output/figures/*.png
+
+# デモ（キー不要で end-to-end を通す。合成データ・図に「デモ」透かし・出力は /demo 配下）
+uv run calorielens --config config.demo.yaml mock-logs
+uv run calorielens --config config.demo.yaml score --labels data/labels/demo_labels.csv
+uv run calorielens --config config.demo.yaml visualize   # demo:true のため自動でデモ扱い
+```
+
+生成物: `ape_vs_steps*.png`（枚数×精度＝頭打ち曲線）/ `cost_vs_ape.png`（コスト×精度）/
+`ranking_table.png` / `daily_cost_table.png`（1日 `cost_scenario.daily_requests` req 試算）。
+料理名の正解率は `data/labels/` のラベルCSV（`score` が `labels_todo.csv` を出力→人手記入）から算出。
+
 ## テスト（本サイクルの完了判定・AC1以外）
 
 ```bash

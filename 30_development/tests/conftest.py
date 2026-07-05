@@ -119,3 +119,60 @@ class FakeClient:
 @pytest.fixture
 def good_client() -> FakeClient:
     return FakeClient(content=GOOD_JSON)
+
+
+@pytest.fixture
+def demo_cfg(tmp_path: Path) -> dict:
+    """採点/合成ログ/可視化テスト用のデモ config（truth・単価あり）。"""
+    return {
+        "_root": tmp_path,
+        "pricing": {"fx": {"usd_jpy": 150.0, "ref": "demo"}},
+        "models": [
+            {
+                "id": "m1",
+                "provider": "openai",
+                "label": "M1",
+                "price_input_per_1m": 5.0,
+                "price_output_per_1m": 15.0,
+                "price_currency": "usd",
+                "price_ref": "demo",
+                "enabled": True,
+            },
+            {
+                "id": "m2",
+                "provider": "aiand",
+                "label": "M2",
+                "price_input_per_1m": 30.0,
+                "price_output_per_1m": 60.0,
+                "price_currency": "jpy",
+                "price_ref": "demo",
+                "enabled": True,
+            },
+        ],
+        "dishes": [
+            {
+                "id": "d1",
+                "label": "料理1",
+                "truth": {"total_kcal": 800.0},
+                "steps": {
+                    "S1": ["a.jpg"],
+                    "S2": ["a.jpg", "b.jpg"],
+                    "S3": ["a.jpg", "b.jpg", "c.jpg"],
+                    "S4": ["a.jpg", "b.jpg", "c.jpg", "d.jpg"],
+                },
+            }
+        ],
+        "experiment": {
+            "temperature": 0,
+            "seed": 123,
+            "trials": 3,
+            "max_json_retries": 2,
+            "prompt_version": "v1",
+        },
+        "cost_scenario": {"daily_requests": 10000},
+        "paths": {
+            "logs_dir": "data/logs/demo",
+            "results_dir": "data/results/demo",
+            "derived_dir": "data/derived",
+        },
+    }

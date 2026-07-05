@@ -23,9 +23,10 @@ def default_config_path() -> Path:
 
 def load_config(path: str | Path | None = None) -> dict:
     """config.yaml をロードし、相対パス解決用に `_root`（config.yaml のあるディレクトリ）を付す。"""
-    path = Path(path) if path is not None else default_config_path()
+    path = Path(path).resolve() if path is not None else default_config_path()
     with path.open(encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
+    # _root は常に絶対（相対 --config でも 50_output 等の解決が cwd に依存しない）
     cfg["_root"] = path.parent
     return cfg
 

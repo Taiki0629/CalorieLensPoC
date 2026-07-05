@@ -63,6 +63,9 @@ experiment:
   max_json_retries: 2
   prompt_version: v1
 
+cost_scenario:
+  daily_requests: 10000 # DAU 1万 × 1人1回撮影（出所: 背景.md §8。確定シナリオ・要確認ではない）
+
 image:
   max_dim: 1024
   jpeg_quality: 85

@@ -11,6 +11,8 @@ dependencies = [
     "python-dotenv>=1.0",
     "pillow>=10.3",
     "pillow-heif>=0.16",
+    "matplotlib>=3.8",
+    "matplotlib-fontja>=1.0",
 ]
 
 [project.scripts]
