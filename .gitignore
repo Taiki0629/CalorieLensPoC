@@ -28,6 +28,11 @@ venv/
 # 生の大容量レスポンスやキャッシュ（必要に応じて調整）
 30_development/**/cache/
 30_development/**/.cache/
+# デモ/使い捨ての合成生成物（seed から再生成可。図のみ 50_output/figures/demo に残す）
+30_development/data/logs/demo/
+30_development/data/logs/_dryrun/
+30_development/data/results/demo/
+30_development/data/labels/demo_labels.csv
 
 # === エディタ ===
 .idea/

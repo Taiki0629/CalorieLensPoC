@@ -1,0 +1,79 @@
+# === デモ専用 config（実結果ではない・合成データ用） ===
+# 分析パイプライン（採点→可視化）を end-to-end で通すための偽の値。
+# 実験の実 config は config.yaml（truth/単価は「要確認」のまま）。本ファイルの数値はすべて架空で、
+# 生成される図表は「デモ（合成データ）」透かし付き・data/results/demo・50_output/figures/demo に出す。
+
+demo: true # この config はデモ。visualize は透かし＋figures/demo を強制（--demo 付け忘れでの混入防止）
+
+providers:
+  openai:
+    base_url: null
+    api_key_env: OPENAI_API_KEY
+  aiand:
+    base_url_env: AIAND_BASE_URL
+    api_key_env: AIAND_API_KEY
+
+pricing:
+  fx:
+    usd_jpy: 150.0 # デモ用の架空レート
+    ref: DEMO（架空）
+
+# デモ用の架空モデル（enabled:true）。単価も架空。
+models:
+  - id: demo-gpt
+    provider: openai
+    label: デモGPT
+    vision: true
+    price_input_per_1m: 5.0 # 架空 USD/1M
+    price_output_per_1m: 15.0
+    price_currency: usd
+    price_ref: DEMO（架空）
+    send_seed: false
+    enabled: true
+  - id: demo-open
+    provider: aiand
+    label: デモOpenModel
+    vision: true
+    price_input_per_1m: 30.0 # 架空 JPY/1M（安いオープンモデル想定）
+    price_output_per_1m: 60.0
+    price_currency: jpy
+    price_ref: DEMO（架空）
+    send_seed: false
+    enabled: true
+
+dishes:
+  - id: conbini_bento
+    label: コンビニ弁当（三色そぼろ系）
+    truth: # デモ用の架空 正解kcal
+      total_kcal: 780.0
+      protein_g: 20.0
+      fat_g: 24.0
+      carb_g: 110.0
+      product_name: DEMO（架空）
+      source: DEMO（架空）
+      checked_on: 2026-07-05
+    steps:
+      S1: [IMG_0420.jpg]
+      S2: [IMG_0420.jpg, IMG_0423.jpg]
+      S3: [IMG_0420.jpg, IMG_0423.jpg, IMG_0421.jpg]
+      S4: [IMG_0420.jpg, IMG_0423.jpg, IMG_0421.jpg, IMG_0425.jpg]
+
+experiment:
+  temperature: 0
+  seed: 12345
+  trials: 3
+  max_json_retries: 2
+  prompt_version: v1
+
+cost_scenario:
+  daily_requests: 10000 # 背景.md §8 の確定シナリオ（デモでも同一）
+
+image:
+  max_dim: 1024
+  jpeg_quality: 85
+
+paths:
+  resources_dir: ../90_resources
+  derived_dir: data/derived
+  logs_dir: data/logs/demo # デモログの出力先（実ログ data/logs とは分離）
+  results_dir: data/results/demo # デモ集計の出力先
