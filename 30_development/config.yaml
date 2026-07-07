@@ -67,14 +67,14 @@ models:
 dishes:
   - id: conbini_bento
     label: コンビニ弁当（三色そぼろ系）
-    truth: # CAL-4 で確定（パッケージ栄養成分表示）
-      total_kcal: 要確認
-      protein_g: 要確認
-      fat_g: 要確認
-      carb_g: 要確認
-      product_name: 要確認
-      source: 要確認
-      checked_on: 要確認
+    truth: # CAL-4: kcal をユーザーがパッケージ栄養成分表示から確認（2026-07-08）
+      total_kcal: 579 # パッケージ栄養成分表示の総カロリー
+      protein_g: 要確認 # パッケージに PFC 等の記載なし（kcal のみ）
+      fat_g: 要確認 # 同上
+      carb_g: 要確認 # 同上
+      product_name: 要確認 # 商品名・購入店・購入日は未取得（CAL-4 残作業）
+      source: パッケージ栄養成分表示（ユーザー確認・2026-07-08）。写真証跡は CAL-4 残作業
+      checked_on: 2026-07-08
     steps: # アングル積み増し（設計 §3）。derived の JPEG を参照
       S1: [IMG_0420.jpg]
       S2: [IMG_0420.jpg, IMG_0423.jpg]
