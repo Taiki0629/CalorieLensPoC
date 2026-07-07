@@ -116,9 +116,11 @@ def cmd_smoke(cfg: dict, run_id: str, client: object | None = None) -> int:
     return 0 if ok == len(conds) else 1
 
 
-def cmd_run(cfg: dict, run_id: str, allow_paid: bool) -> int:
-    total = count_conditions(cfg, models=enabled_models(cfg))
-    print(f"[run] 対象リクエスト数: {total}（enabled モデルのみ）")
+def cmd_run(cfg: dict, run_id: str, allow_paid: bool, dishes: list[str] | None = None) -> int:
+    models = enabled_models(cfg)
+    total = count_conditions(cfg, models=models, dishes=dishes)
+    scope = f"dish={dishes}" if dishes else "全dish"
+    print(f"[run] 対象リクエスト数: {total}（enabled モデル・{scope}）")
     if not allow_paid:
         print(
             "[停止] これは課金一括実行に該当します（CLAUDE.md §2 承認ゲート）。\n"
@@ -134,7 +136,7 @@ def cmd_run(cfg: dict, run_id: str, allow_paid: bool) -> int:
     root = Path(cfg["_root"])
     log_path = root / cfg["paths"]["logs_dir"] / f"{run_id}.jsonl"
     ok = 0
-    for dish_id, step, model_cfg, trial in iter_conditions(cfg, models=enabled_models(cfg)):
+    for dish_id, step, model_cfg, trial in iter_conditions(cfg, models=models, dishes=dishes):
         rec = run_one(cfg, dish_id, step, model_cfg, trial, run_id)
         append_jsonl(log_path, rec)
         ok += rec["status"] == "ok"
@@ -251,6 +253,7 @@ def main(argv: list[str] | None = None) -> int:
     p_run = sub.add_parser("run", help="本番スイープ（課金一括・要人間承認）")
     p_run.add_argument("--run-id", required=True)
     p_run.add_argument("--allow-paid", action="store_true", help="人間承認済みを明示（無いと拒否）")
+    p_run.add_argument("--dish", default=None, help="この dish のみ実行（省略時は全 dish）")
 
     p_mock = sub.add_parser("mock-logs", help="デモ用 合成ログ生成（config.demo.yaml 前提）")
     p_mock.add_argument("--out", default=None)
@@ -274,7 +277,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "smoke":
         return cmd_smoke(cfg, args.run_id)
     if args.command == "run":
-        return cmd_run(cfg, args.run_id, args.allow_paid)
+        dishes = [args.dish] if args.dish else None
+        return cmd_run(cfg, args.run_id, args.allow_paid, dishes=dishes)
     if args.command == "mock-logs":
         return cmd_mock_logs(cfg, args.out, args.seed)
     if args.command == "score":

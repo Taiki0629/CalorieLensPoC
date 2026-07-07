@@ -26,6 +26,12 @@ venv/
 # Windows(WSL) のダウンロード印 (Alternate Data Stream) — 実体ではないので除外
 *:Zone.Identifier
 
+# === 第三者の著作物（コミット/公開しない・ローカル分析のみ） ===
+# すき家牛丼はプロモ写真（moneypost.jp）を使用。著作権のためリポジトリに含めない。
+# 実験ログは path+sha256 で参照を記録する（画像実体は非コミット）。
+30_development/data/derived/sukiya_gyudon_nami.jpg
+99_scratch/sukiya_gyudon_nami.jpg
+
 # === 実験の生成物のうちコミットしないもの ===
 # 生の大容量レスポンスやキャッシュ（必要に応じて調整）
 30_development/**/cache/
