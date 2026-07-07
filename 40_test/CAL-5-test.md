@@ -7,8 +7,8 @@
 
 # CAL-5 共通実装 動作確認
 
-実APIは叩かない（AC1 のライブ疎通はキー到着後の追いPR）。本記録は骨格＋モックによる
-AC2〜6 の確認。環境は `30_development` で `uv sync` 済み。
+§1-3 は骨格＋モックによる AC2〜6 の確認（2026-07-05）。§5 に **AC1 ライブ疎通**（キー投入後・
+2026-07-08 追記）を記録。環境は `30_development` で `uv sync` 済み。
 
 ## 1. lint / 単体テスト
 
@@ -58,8 +58,37 @@ uv run calorielens run --run-id smoke2      # --allow-paid なし
 | AC4 | JSONL 1行記録（全フィールド） | ✅ | `LOG_FIELDS` 21+attempts、`test_logger.*` |
 | AC5 | 秘密情報は .env のみ | ✅ | ホワイトリスト・`test_secret_not_written` |
 | AC6 | uv構築・ruff通過 | ✅ | 上記 §1 |
-| AC1 | OpenAI・ai& 実キー疎通 | ⏸ 追いPR | API キー未投入（CAL-3/§2.1 実確認事項）|
+| AC1 | OpenAI・ai& 実キー疎通 | ✅ | §5 ライブ疎通（`smoke` で 4/4 ok・両provider）|
 
-## 4. 既知の残作業（キー到着後）
-- AC1 ライブ疎通（`base_url`/`api_key` 切替で OpenAI・ai& 両方に画像付き実リクエスト成功）。
-- 設計 §2.1 の実API依存項目（usage 実形状・vision非対応の実エラー形・data URL 受理・seed 対応可否・為替）。
+## 4. 実API依存項目の解消（設計 §2.1）
+- usage 実形状・data URL 受理・seed 対応可否・為替: CAL-3 と §5 smoke の実応答で確定（seed 4モデル受理、
+  usage は input/output/total を実取得、data URL 受理OK、為替 161.87）。
+- vision 非対応の実エラー形: 採用4モデルは全て vision 対応のため本実験では発火しない。分類ロジック
+  （`_classify_exception`）は単体テストで担保済み（`test_run_one_vision_unsupported`）。
+
+## 5. AC1 ライブ疎通（2026-07-08・キー投入後）
+
+キー投入後、**課金一括ではない疎通専用サブコマンド `smoke`** を追加（enabled 各1件・S1・trial1＝
+本番の全step×全trialにならない）。共通 runner（`run_one`）経由で base_url 切替により両provider へ
+画像付きリクエストを実送信する。
+
+```bash
+uv run calorielens smoke --run-id cal5-ac1
+```
+
+結果（`data/logs/_smoke/cal5-ac1.jsonl`・4行）:
+
+| provider | model | status | usage(in/out) | cost_jpy |
+|----------|-------|:------:|---------------|---------:|
+| openai | gpt-5.4 | ok | 1113 / 76 | 0.635 |
+| openai | gpt-5.4-mini | ok | 1113 / 56 | 0.176 |
+| aiand | google/gemma-4-31b-it | ok | 448 / 76 | **0.021** |
+| aiand | moonshotai/kimi-k2.6 | ok | 1230 / **2144** | **1.384** |
+
+- **base_url 切替で OpenAI・ai& 双方に画像付きリクエストが成功**（4/4 ok・両provider）＝AC1 充足。
+- JSONL 完全性を検証: 全行 21 必須フィールド欠損なし・`image_refs` は相対パス＋sha256・**キー非混入**
+  （`sk-`/`api_key` の混入なし）・usage を実取得・`cost_jpy`＝usage×config単価×為替で算出。
+- **考察の種**: Kimi K2.6 は出力 2144 トークン（推論）で 1コール **¥1.38＝gpt-5.4(¥0.63)より高い**。
+  「per-token 単価が安くても実コールは高い」を実データで確認（§8 コスト軸で回収）。
+- 安全性: `smoke` は `--allow-paid` 不要だが「enabled 各1件」に限定。本番一括 `run` は従来どおり
+  `--allow-paid`＋人間 GO が停止点（`test_cli.test_cmd_smoke_*`・課金ガードは §2.3）。
