@@ -1,0 +1,30 @@
+{
+  "tested_at": "2026-07-08T01:06:45+09:00",
+  "seed": 12345,
+  "results": [
+    {
+      "provider": "openai",
+      "model": "gpt-5.4",
+      "seed_accepted": true,
+      "text": "1"
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-5.4-mini",
+      "seed_accepted": true,
+      "text": "1"
+    },
+    {
+      "provider": "aiand",
+      "model": "google/gemma-4-31b-it",
+      "seed_accepted": true,
+      "text": "1"
+    },
+    {
+      "provider": "aiand",
+      "model": "moonshotai/kimi-k2.6",
+      "seed_accepted": true,
+      "text": " 1"
+    }
+  ]
+}

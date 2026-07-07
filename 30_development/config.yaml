@@ -12,31 +12,57 @@ providers:
 
 pricing:
   fx:
-    usd_jpy: 要確認 # USD建て単価の JPY 換算レート（CAL-3で確定）
-    ref: 要確認 # 出典URL・確認日
+    # 両provider とも USD 建て（ai& /models も currency:usd）。為替は §8 の絶対円換算のみに効き、
+    # 相対コスト比較（OpenAI vs ai&）には影響しない。CAL-3 で確定（2026-07-08）。
+    usd_jpy: 161.87
+    ref: "USD/JPY=161.87 tradingeconomics.com/japan/currency（2026-07-07 スナップショット・確認日2026-07-08）"
 
-# CAL-3 で確定するまで enabled:false。id/単価/vision を実API(/models)と公式料金で埋める。
+# CAL-3 で実API(/models)と公式料金から確定（確認日 2026-07-08）。vision は全モデル「テスト画像を
+# 実送信し正常応答」を実証（99_scratch/cal3_vision_probe.py・証跡 90_resources/CAL-3_evidence/）。
+# 除外モデルと根拠は 20_design/CAL-3-モデル確定.md を参照:
+#   qwen/qwen3.6-27b(¥0だが vision 非対応→採用不可)・openai/gpt-oss-120b(vision非対応)・
+#   deepseek/glm/deepseek系(vision非対応)・moonshotai/kimi-k2.7-code(code特化のため除外)。
 models:
-  - id: 要確認
+  - id: gpt-5.4
     provider: openai
-    label: 要確認 # 例: GPT系
-    vision: 要確認
-    price_input_per_1m: 要確認
-    price_output_per_1m: 要確認
+    label: GPT-5.4（本番推奨の中量級）
+    vision: true # 実証: IMG_0420→「幕の内弁当」(2026-07-08, 証跡:CAL-3_evidence/vision_probe_result.json)
+    price_input_per_1m: 2.50
+    price_output_per_1m: 15.00
     price_currency: usd
-    price_ref: 要確認
-    send_seed: true # OpenAI は seed 対応。ai& は要確認（未対応なら false）
-    enabled: false
-  - id: 要確認
+    price_ref: "https://developers.openai.com/api/docs/pricing 確認日2026-07-08"
+    send_seed: true # seed受理を実APIで実証（2026-07-08）
+    enabled: true
+  - id: gpt-5.4-mini
+    provider: openai
+    label: GPT-5.4 Mini（コスト最適化版）
+    vision: true # 実証: IMG_0420→「お弁当」（2026-07-08, 証跡:CAL-3_evidence/vision_probe_result.json）
+    price_input_per_1m: 0.75
+    price_output_per_1m: 4.50
+    price_currency: usd
+    price_ref: "https://developers.openai.com/api/docs/pricing 確認日2026-07-08"
+    send_seed: true # seed受理を実APIで実証（2026-07-08, 証跡:CAL-3_evidence/seed_probe_result.json）
+    enabled: true
+  - id: google/gemma-4-31b-it
     provider: aiand
-    label: 要確認 # 例: オープンモデル
-    vision: 要確認
-    price_input_per_1m: 要確認
-    price_output_per_1m: 要確認
-    price_currency: jpy
-    price_ref: 要確認
-    send_seed: 要確認 # seed 対応可否を CAL-3 で確認（未確定の間は送らない＝falsy）
-    enabled: false
+    label: Gemma 4 31B it（ai& 最安 vision＝激安の目玉）
+    vision: true # 実証: IMG_0420→「弁当」＋/models capability:vision（2026-07-08）
+    price_input_per_1m: 0.20
+    price_output_per_1m: 0.50
+    price_currency: usd # ai& /models も currency:usd
+    price_ref: "ai& /models 実API(capability+料金) 確認日2026-07-08 証跡:90_resources/CAL-3_evidence/aiand_models.json"
+    send_seed: true # ai&で seed受理を実APIで実証（2026-07-08, 証跡:CAL-3_evidence/seed_probe_result.json）
+    enabled: true
+  - id: moonshotai/kimi-k2.6
+    provider: aiand
+    label: Kimi K2.6（ai& 中量級 vision・推論トークン多め）
+    vision: true # 実証: IMG_0420→「そぼろ弁当」(completion 3494tok・20s)＋capability:vision（2026-07-08）
+    price_input_per_1m: 0.85
+    price_output_per_1m: 3.50
+    price_currency: usd
+    price_ref: "ai& /models 実API(capability+料金) 確認日2026-07-08 証跡:90_resources/CAL-3_evidence/aiand_models.json"
+    send_seed: true # ai&で seed受理を実APIで実証（kimi-k2.6, 2026-07-08, 証跡:seed_probe_result.json）
+    enabled: true
 
 dishes:
   - id: conbini_bento

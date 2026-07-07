@@ -1,0 +1,179 @@
+{
+  "fetched_at": "2026-07-08T01:06:45+09:00",
+  "base_url": "https://api.aiand.com/v1",
+  "status": 200,
+  "body": {
+    "object": "list",
+    "data": [
+      {
+        "id": "zai-org/glm-5.2",
+        "name": "zai-org/glm-5.2",
+        "object": "model",
+        "created": 1781883319,
+        "owned_by": "ai&",
+        "provider": "zai-org",
+        "context_window": 1048576,
+        "capabilities": [
+          "reasoning",
+          "tool_calling"
+        ],
+        "description": null,
+        "currency": "usd",
+        "input_per_1m": "1.000000",
+        "output_per_1m": "4.000000",
+        "cached_input_per_1m": "0.300000"
+      },
+      {
+        "id": "moonshotai/kimi-k2.7-code",
+        "name": "moonshotai/kimi-k2.7-code",
+        "object": "model",
+        "created": 1781883794,
+        "owned_by": "ai&",
+        "provider": "moonshotai",
+        "context_window": 262144,
+        "capabilities": [
+          "reasoning",
+          "tool_calling",
+          "vision",
+          "document"
+        ],
+        "description": "Kimi K2.7-Code by Moonshot AI",
+        "currency": "usd",
+        "input_per_1m": "0.750000",
+        "output_per_1m": "3.500000",
+        "cached_input_per_1m": "0.200000"
+      },
+      {
+        "id": "deepseek-ai/deepseek-v4-pro",
+        "name": "deepseek-ai/DeepSeek-V4-Pro",
+        "object": "model",
+        "created": 1780245364,
+        "owned_by": "ai&",
+        "provider": "deepseek-ai",
+        "context_window": 1048576,
+        "capabilities": [
+          "reasoning",
+          "tool_calling"
+        ],
+        "description": "DeepSeek-V4-Pro",
+        "currency": "usd",
+        "input_per_1m": "1.000000",
+        "output_per_1m": "2.500000",
+        "cached_input_per_1m": "0.250000"
+      },
+      {
+        "id": "deepseek-ai/deepseek-v4-flash",
+        "name": "deepseek-ai/DeepSeek-V4-Flash",
+        "object": "model",
+        "created": 1780245232,
+        "owned_by": "ai&",
+        "provider": "deepseek-ai",
+        "context_window": 1048576,
+        "capabilities": [
+          "reasoning",
+          "tool_calling"
+        ],
+        "description": "DeepSeek-V4-Flash",
+        "currency": "usd",
+        "input_per_1m": "0.150000",
+        "output_per_1m": "0.250000",
+        "cached_input_per_1m": "0.080000"
+      },
+      {
+        "id": "qwen/qwen3.6-27b",
+        "name": "qwen/qwen3.6-27b",
+        "object": "model",
+        "created": 1780245077,
+        "owned_by": "ai&",
+        "provider": "qwen",
+        "context_window": 262144,
+        "capabilities": [
+          "reasoning",
+          "tool_calling"
+        ],
+        "description": "Qwen3.6-27B",
+        "currency": "usd",
+        "input_per_1m": "0.000000",
+        "output_per_1m": "0.000000",
+        "cached_input_per_1m": null
+      },
+      {
+        "id": "google/gemma-4-31b-it",
+        "name": "google/gemma-4-31b-it",
+        "object": "model",
+        "created": 1775474514,
+        "owned_by": "ai&",
+        "provider": "google",
+        "context_window": 262144,
+        "capabilities": [
+          "reasoning",
+          "tool_calling",
+          "vision",
+          "video",
+          "document"
+        ],
+        "description": "Google Gemma 4 31B instruction-tuned",
+        "currency": "usd",
+        "input_per_1m": "0.200000",
+        "output_per_1m": "0.500000",
+        "cached_input_per_1m": "0.050000"
+      },
+      {
+        "id": "zai-org/glm-5.1",
+        "name": "zai-org/glm-5.1",
+        "object": "model",
+        "created": 1775633064,
+        "owned_by": "ai&",
+        "provider": "zai-org",
+        "context_window": 202752,
+        "capabilities": [
+          "reasoning",
+          "tool_calling"
+        ],
+        "description": "GLM-5.1 by ZhipuAI",
+        "currency": "usd",
+        "input_per_1m": "1.400000",
+        "output_per_1m": "4.400000",
+        "cached_input_per_1m": "0.300000"
+      },
+      {
+        "id": "openai/gpt-oss-120b",
+        "name": "openai/gpt-oss-120b",
+        "object": "model",
+        "created": 1775474514,
+        "owned_by": "ai&",
+        "provider": "openai",
+        "context_window": 131072,
+        "capabilities": [
+          "reasoning",
+          "tool_calling"
+        ],
+        "description": "OpenAI GPT OSS 120B",
+        "currency": "usd",
+        "input_per_1m": "0.150000",
+        "output_per_1m": "0.600000",
+        "cached_input_per_1m": "0.080000"
+      },
+      {
+        "id": "moonshotai/kimi-k2.6",
+        "name": "moonshotai/kimi-k2.6",
+        "object": "model",
+        "created": 1777544690,
+        "owned_by": "ai&",
+        "provider": "moonshotai",
+        "context_window": 262144,
+        "capabilities": [
+          "reasoning",
+          "tool_calling",
+          "vision",
+          "document"
+        ],
+        "description": "Kimi K2.6 by Moonshot AI",
+        "currency": "usd",
+        "input_per_1m": "0.850000",
+        "output_per_1m": "3.500000",
+        "cached_input_per_1m": "0.200000"
+      }
+    ]
+  }
+}
