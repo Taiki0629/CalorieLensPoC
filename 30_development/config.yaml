@@ -80,7 +80,20 @@ dishes:
       S2: [IMG_0420.jpg, IMG_0423.jpg]
       S3: [IMG_0420.jpg, IMG_0423.jpg, IMG_0421.jpg]
       S4: [IMG_0420.jpg, IMG_0423.jpg, IMG_0421.jpg, IMG_0425.jpg]
-  # Phase 2 で sukiya_gyudon を同形式で追加する
+  - id: sukiya_gyudon
+    label: すき家 牛丼（並盛）
+    truth: # CAL-4: すき家(ゼンショー)公式 栄養成分一覧PDFで確定（2026-07-08）
+      total_kcal: 695 # 牛丼 並盛（店内）。※検索値795は「高菜明太マヨ牛丼」で誤り→公式PDFで訂正
+      protein_g: 21.7
+      fat_g: 23.4
+      carb_g: 99.8
+      product_name: 牛丼 並盛（店内）
+      source: すき家(ゼンショー) 栄養成分一覧 https://images.zensho.co.jp/materials/sukiya/allergen/nutrition.pdf 更新日2026-07-03
+      checked_on: 2026-07-08
+    # 第三者プロモ写真1枚（moneypost.jp）のため S1 のみ（角度実験は不可）。
+    # 画像は著作権により非コミット（.gitignore）。ログは path+sha256 で参照を記録。
+    steps:
+      S1: [sukiya_gyudon_nami.jpg]
 
 experiment:
   temperature: 0

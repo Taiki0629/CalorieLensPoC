@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from calorielens.__main__ import cmd_smoke
+from calorielens.__main__ import cmd_run, cmd_smoke
+from calorielens.runner import count_conditions
 
 from .conftest import GOOD_JSON, FakeClient
 
@@ -36,3 +37,17 @@ def test_cmd_smoke_one_per_enabled_model(cfg):
 def test_cmd_smoke_no_enabled_models(cfg):
     cfg["models"] = []
     assert cmd_smoke(cfg, "t") == 1  # enabled 無し → 実行前に 1 で返す（実APIを叩かない）
+
+
+def test_run_dish_filter_scopes_conditions(cfg):
+    # --dish で対象を1品に絞れる（他品の再実行を避ける）。cfg: trials=2, dish1 steps=S1,S2
+    cfg["models"] = [_model("m1")]
+    cfg["dishes"].append({"id": "dish2", "label": "2品目", "steps": {"S1": ["IMG_A.jpg"]}})
+    assert count_conditions(cfg, models=cfg["models"]) == 6  # dish1(2step×2trial)+dish2(1×2)
+    assert count_conditions(cfg, models=cfg["models"], dishes=["dish2"]) == 2  # dish2 のみ
+
+
+def test_cmd_run_dish_still_guarded(cfg):
+    # --dish を付けても課金ガードは無傷（--allow-paid 無し → 実APIを叩かず 2 で停止）
+    cfg["models"] = [_model("m1")]
+    assert cmd_run(cfg, "t", allow_paid=False, dishes=["test_dish"]) == 2
