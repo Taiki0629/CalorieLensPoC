@@ -15,6 +15,21 @@ GOOD_JSON = (
 )
 
 
+@pytest.fixture(autouse=True)
+def _hermetic_env(monkeypatch):
+    """ユニットテストを実 .env・実キーから隔離する（多層防御）。
+
+    resolve_provider は load_dotenv で開発者の実キー/実 base_url を os.environ に流し込む。
+    これが有効だと「キー無し→api_error」「base_url 未設定→明示エラー」を検証するテストが、
+    monkeypatch.delenv した直後に .env の値で復活して壊れる（過去に実課金コールが漏れた）。
+    (1) load_env を無効化して .env 再読込を止め、(2) 実プロバイダキー/URL を baseline で除去して
+    「実キーが存在しない＝実APIへ到達しない」状態を保証する。値が要るテストは setenv で上書きする。
+    """
+    monkeypatch.setattr("calorielens.config.load_env", lambda: None)
+    for var in ("OPENAI_API_KEY", "AIAND_API_KEY", "AIAND_BASE_URL"):
+        monkeypatch.delenv(var, raising=False)
+
+
 def make_jpeg(path: Path, color: tuple[int, int, int] = (120, 120, 120), size=(64, 64)) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     Image.new("RGB", size, color).save(path, "JPEG", quality=85)

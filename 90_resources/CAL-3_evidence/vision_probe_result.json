@@ -1,0 +1,79 @@
+{
+  "tested_at": "2026-07-08T01:06:45+09:00",
+  "image": "IMG_0420.jpg",
+  "prompt": "この画像に写っている料理は何ですか。料理名だけを日本語で短く答えてください。",
+  "results": [
+    {
+      "provider": "openai",
+      "model": "gpt-5.4",
+      "status": "ok",
+      "latency_ms": 2603,
+      "text": "幕の内弁当",
+      "usage": {
+        "completion_tokens": 9,
+        "prompt_tokens": 953,
+        "total_tokens": 962,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-5.4-mini",
+      "status": "ok",
+      "latency_ms": 1531,
+      "text": "お弁当",
+      "usage": {
+        "completion_tokens": 7,
+        "prompt_tokens": 953,
+        "total_tokens": 960,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "provider": "aiand",
+      "model": "google/gemma-4-31b-it",
+      "status": "ok",
+      "latency_ms": 1667,
+      "text": "弁当",
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 304,
+        "total_tokens": 306,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "provider": "aiand",
+      "model": "moonshotai/kimi-k2.6",
+      "status": "ok",
+      "latency_ms": 20116,
+      "text": " そぼろ弁当",
+      "usage": {
+        "completion_tokens": 3494,
+        "prompt_tokens": 1074,
+        "total_tokens": 4568,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": null
+      }
+    }
+  ]
+}
