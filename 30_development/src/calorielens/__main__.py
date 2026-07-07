@@ -1,4 +1,4 @@
-"""CLI（設計 §4）。convert-images / dry-run / run（課金一括はガード）。"""
+"""CLI（設計 §4）。convert-images / dry-run / smoke（疎通・小額）/ run（課金一括はガード）。"""
 
 from __future__ import annotations
 
@@ -77,6 +77,43 @@ def cmd_dry_run(cfg: dict, dish: str, step: str, run_id: str) -> int:
     print(f"[dry-run] status={rec['status']} n_images={rec['n_images']} parsed={rec['parsed']}")
     print(f"[dry-run] logged -> {log_path}")
     return 0 if rec["status"] == "ok" else 1
+
+
+def cmd_smoke(cfg: dict, run_id: str, client: object | None = None) -> int:
+    """疎通のみ: enabled モデル各1件（先頭 dish / S1 / trial1）を共通 runner で実行する。
+
+    本番一括（全step×全trial）ではないため --allow-paid は不要。base_url 切替で OpenAI・ai&
+    双方に画像付きリクエストが通ることを実APIで確認し、実 JSONL 1行を残す（CAL-5 AC1）。
+    """
+    models = enabled_models(cfg)
+    if not models:
+        print("[smoke] enabled なモデルがありません（CAL-3 未確定）。", file=sys.stderr)
+        return 1
+    first_dish = cfg["dishes"][0]["id"]
+    # steps は config で S1→S4 の順に定義（先頭＝最小の1枚）。疎通は最小構成の S1 を使う
+    first_step = next(iter(cfg["dishes"][0]["steps"]))
+    root = Path(cfg["_root"])
+    log_path = root / cfg["paths"]["logs_dir"] / "_smoke" / f"{run_id}.jsonl"
+    conds = [
+        c
+        for c in iter_conditions(cfg, dishes=[first_dish], steps=[first_step], models=models)
+        if c[3] == 1
+    ]
+    print(
+        f"[smoke] 疎通のみ {len(conds)} コール（enabled 各1件・{first_dish}/{first_step}/trial1）。"
+        "本番一括ではありませんが、実APIへの小額課金が発生します。"
+    )
+    ok = 0
+    for dish_id, step, model_cfg, trial in conds:
+        rec = run_one(cfg, dish_id, step, model_cfg, trial, run_id, client=client)
+        append_jsonl(log_path, rec)
+        print(
+            f"[smoke] {model_cfg['provider']:6} {model_cfg['id']:28} "
+            f"status={rec['status']} n_images={rec['n_images']} cost_jpy={rec['cost_jpy']}"
+        )
+        ok += rec["status"] == "ok"
+    print(f"[smoke] {ok}/{len(conds)} ok -> {log_path}")
+    return 0 if ok == len(conds) else 1
 
 
 def cmd_run(cfg: dict, run_id: str, allow_paid: bool) -> int:
@@ -206,6 +243,11 @@ def main(argv: list[str] | None = None) -> int:
     p_dry.add_argument("--step", default="S1")
     p_dry.add_argument("--run-id", default="dryrun")
 
+    p_smoke = sub.add_parser(
+        "smoke", help="疎通のみ（enabled各1件・小額課金あり・本番一括ではない）"
+    )
+    p_smoke.add_argument("--run-id", default="smoke")
+
     p_run = sub.add_parser("run", help="本番スイープ（課金一括・要人間承認）")
     p_run.add_argument("--run-id", required=True)
     p_run.add_argument("--allow-paid", action="store_true", help="人間承認済みを明示（無いと拒否）")
@@ -229,6 +271,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_convert_images(cfg)
     if args.command == "dry-run":
         return cmd_dry_run(cfg, args.dish, args.step, args.run_id)
+    if args.command == "smoke":
+        return cmd_smoke(cfg, args.run_id)
     if args.command == "run":
         return cmd_run(cfg, args.run_id, args.allow_paid)
     if args.command == "mock-logs":
