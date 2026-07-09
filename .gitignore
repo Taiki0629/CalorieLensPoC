@@ -4,6 +4,8 @@
 .env.*.local
 *.key
 *.pem
+# 環境構築スクショ（APIキー・アカウント情報の写り込みの恐れ。Qiitaへは個別にマスク済みをアップロード）
+50_output/環境構築/
 
 # === Python / uv ===
 __pycache__/
