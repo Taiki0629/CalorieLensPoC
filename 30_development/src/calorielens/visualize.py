@@ -53,6 +53,11 @@ def _step_key(step: str) -> int:
         return 0
 
 
+def _short_model(model: str) -> str:
+    """表示用にプロバイダ接頭辞を落とす（google/gemma-4-31b-it → gemma-4-31b-it）。"""
+    return model.split("/")[-1]
+
+
 def model_colors(models: list[str]) -> dict:
     """モデル名→色（ソートした実体順に固定割当。フィルタで順位が変わっても色は不変）。"""
     return {m: CATEGORICAL[i % len(CATEGORICAL)] for i, m in enumerate(sorted(models))}
@@ -175,6 +180,81 @@ def scatter_cost_ape(
             )
     if ax.has_data():
         ax.legend(frameon=False, labelcolor=INK)
+    if demo:
+        _watermark(fig)
+    return _save(fig, out_path)
+
+
+def bar_ape_by_dish(
+    score_rows: list[dict],
+    out_path: str | Path,
+    *,
+    dish_labels: dict | None = None,
+    demo: bool = False,
+) -> Path:
+    """料理別の平均APE（モデル×料理のグループ棒）。順位が料理で逆転することを1枚で示す。
+
+    各バーは (料理, モデル) の平均APE（ステップ平均）。x はハード料理（平均APEが高い方＝弁当）の
+    APE 昇順に並べ、もう一方が逆順に降りる＝逆転を視覚化する。色=料理（2系列・色覚安全）＋
+    ハッチを二次エンコード（白黒/色覚対策）。単一軸。
+    """
+    from collections import defaultdict
+
+    acc: dict = defaultdict(list)
+    for r in score_rows:
+        a = _num(r.get("ape_mean"))
+        if a is not None:
+            acc[(r["dish"], r["model"])].append(a)
+    dishes = sorted({d for d, _ in acc})
+    models = sorted({m for _, m in acc})
+    title = "料理で順位が逆転する（モデル別 平均APE）"
+    fig, ax = _new_ax(title, "モデル", "APE（%）＝カロリー誤差")
+    if not dishes or not models:
+        return _save(fig, out_path)  # データ無しでも落とさず空図
+
+    def mean(d: str, m: str) -> float | None:
+        xs = acc.get((d, m))
+        return sum(xs) / len(xs) if xs else None
+
+    val = {(d, m): mean(d, m) for d in dishes for m in models}
+
+    def dish_total(d: str) -> float:
+        return sum(v for m in models if (v := val[(d, m)]) is not None)
+
+    sort_dish = max(dishes, key=dish_total)  # 平均APEが高い方（弁当）を昇順基準に
+    ordered = sorted(
+        models, key=lambda m: (val[(sort_dish, m)] is None, val[(sort_dish, m)] or 0.0)
+    )
+
+    labels = dish_labels or {d: d for d in dishes}
+    dish_color = {d: CATEGORICAL[0 if i == 0 else 2] for i, d in enumerate(dishes)}
+    hatches = {d: (None if i == 0 else "//") for i, d in enumerate(dishes)}
+
+    n = len(dishes)
+    bw = 0.8 / n
+    xs = list(range(len(ordered)))
+    for i, d in enumerate(dishes):
+        offs = [x + (i - (n - 1) / 2) * bw for x in xs]
+        heights = [val[(d, m)] or 0.0 for m in ordered]
+        ax.bar(
+            offs,
+            heights,
+            bw,
+            color=dish_color[d],
+            edgecolor=SURFACE,
+            linewidth=1.5,
+            hatch=hatches[d],
+            label=labels.get(d, d),
+        )
+        for x, m in zip(offs, ordered, strict=True):
+            h = val[(d, m)]
+            if h is not None:
+                ax.text(x, h + 1.5, f"{h:.1f}", ha="center", va="bottom", color=INK, fontsize=9)
+    ax.set_xticks(xs)
+    ax.set_xticklabels([_short_model(m) for m in ordered])
+    top = max((v for v in val.values() if v is not None), default=100.0)
+    ax.set_ylim(0, top * 1.18)
+    ax.legend(frameon=False, labelcolor=INK)
     if demo:
         _watermark(fig)
     return _save(fig, out_path)

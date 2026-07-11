@@ -219,6 +219,13 @@ def cmd_visualize(cfg: dict, demo: bool) -> int:
         score_rows, figures / "cost_vs_ape.png", demo=demo, colors=colors, markers=markers
     )
     visualize.ranking_table(summary, figures / "ranking_table.png", demo=demo)
+    # 料理で順位が逆転することを1枚で示す棒グラフ（表示名は config の label 冒頭を使用）
+    dish_labels = {
+        d["id"]: str(d.get("label", d["id"])).split("（")[0] for d in cfg.get("dishes", [])
+    }
+    visualize.bar_ape_by_dish(
+        score_rows, figures / "ape_by_dish.png", dish_labels=dish_labels, demo=demo
+    )
     daily = cfg["cost_scenario"]["daily_requests"]
     visualize.daily_cost_table(score_rows, daily, figures / "daily_cost_table.png", demo=demo)
     scoring.write_csv(
